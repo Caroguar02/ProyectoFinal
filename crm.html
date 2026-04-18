@@ -344,15 +344,20 @@
             const financCounts = {};
 
             const headRow = data[0]; 
-            let colNombre = "A"; // default
-            let colTelefono = "B"; // default
+            let colNombre = null; 
+            let colTelefono = null; 
 
             // Detectar dinámicamente Nombre y Teléfono (Ingresos ya sabemos que es la columna H)
             Object.keys(headRow).forEach(letter => {
                 const hName = String(headRow[letter]).toLowerCase();
-                if(hName.includes("nombre") || hName.includes("cliente")) colNombre = letter;
-                if(hName.includes("tel") || hName.includes("celular")) colTelefono = letter;
+                // Bloqueamos la primera coincidencia que encuentre para que no sobreescriba si hay otra columna "Nombre asesor", etc.
+                if(!colNombre && (hName.includes("nombre") || hName.includes("cliente"))) colNombre = letter;
+                if(!colTelefono && (hName.includes("tel") || hName.includes("celular"))) colTelefono = letter;
             });
+            
+            // Si por alguna razón no encuentra coincidencias, usar un predeterminado
+            if (!colNombre) colNombre = "A";
+            if (!colTelefono) colTelefono = "B";
 
             // Iteramos desde la fila 1 para saltar los encabezados
             for (let i = 1; i < data.length; i++) {
